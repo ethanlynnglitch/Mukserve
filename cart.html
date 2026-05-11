@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Your Cart - MukServe</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <link href="lib/fontawesome/css/all.min.css" rel="stylesheet">
+    <link href="lib/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+        .pulse-button {
+            animation: pulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 rgba(13, 110, 253, 0.5);
+            }
+            50% {
+                transform: scale(1.03);
+                box-shadow: 0 0 16px rgba(13, 110, 253, 0.35);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-xxl bg-white p-0">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
+            <a href="index.html" class="navbar-brand p-0">
+                <h1 class="text-primary m-0"><i class="fa fa-utensils me-3"></i>MUKSERVE</h1>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="fa fa-bars"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto py-0 pe-4">
+                    <a href="index.html" class="nav-item nav-link">Home</a>
+                    <a href="hall-food-menu.html" class="nav-item nav-link">Order</a>
+                    <a href="cart.html" class="nav-item nav-link active">Cart</a>
+                    <a href="contact.html" class="nav-item nav-link">Contact</a>
+                </div>
+                <button type="button" class="btn btn-primary ms-3" data-bs-toggle="modal" data-bs-target="#loginModal">
+                    <i class="fas fa-user"></i> Login/Signup
+                </button>
+            </div>
+        </nav>
+
+        <div class="container-xxl py-5 bg-dark hero-header mb-5">
+            <div class="container my-5 py-5">
+                <div class="row align-items-center g-5">
+                    <div class="col-lg-6 text-center text-lg-start">
+                        <h1 class="display-3 text-white animated slideInLeft">Your Cart</h1>
+                        <p class="text-white animated slideInLeft mb-4 pb-2">Review your selected meals, adjust quantities, or remove items before submitting.</p>
+                    </div>
+                    <div class="col-lg-6 text-center text-lg-end overflow-hidden">
+                        <img class="img-fluid" src="img/hero.png" alt="Cart">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-xxl py-5">
+            <div class="container">
+                <div id="cartPlaceholder" class="text-center py-5"></div>
+                <div id="cartContent" class="row g-4"></div>
+            </div>
+        </div>
+
+        <div class="container-fluid bg-dark text-light footer pt-5 mt-5">
+            <div class="container py-5">
+                <div class="row g-5">
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Company</h4>
+                        <a class="btn btn-link" href="index.html">Home</a>
+                        <a class="btn btn-link" href="contact.html">Contact Us</a>
+                        <a class="btn btn-link" href="hall-food-menu.html">Order Now</a>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Contact</h4>
+                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Makerere University Main Campus, Kampala Road, Kampala, Uganda</p>
+                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+256 414 540 111</p>
+                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@mukserve.ug</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    </div>
+
+    <script src="lib/jquery/jquery-3.4.1.min.js"></script>
+    <script src="lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/counterup/counterup.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        const CART_KEY = 'mukserveCart';
+        const ORDER_PLACED_KEY = 'mukserveOrderPlaced';
+
+        function getCart() {
+            try {
+                return JSON.parse(sessionStorage.getItem(CART_KEY)) || [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveCart(cart) {
+            sessionStorage.setItem(CART_KEY, JSON.stringify(cart));
+        }
+
+        function clearStateOnReload() {
+            const navEntries = performance.getEntriesByType ? performance.getEntriesByType('navigation') : [];
+            const isReload = (navEntries && navEntries.length && navEntries[0].type === 'reload') ||
+                (performance.navigation && performance.navigation.type === performance.navigation.TYPE_RELOAD);
+            if (isReload) {
+                sessionStorage.removeItem(CART_KEY);
+                sessionStorage.removeItem(ORDER_PLACED_KEY);
+            }
+        }
+
+        function playNotificationTone() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.2);
+            } catch (e) {
+                console.warn('Notification tone unavailable', e);
+            }
+        }
+
+        function formatPrice(value) {
+            return 'UGX ' + Number(value).toLocaleString();
+        }
+
+        function updateCartDisplay() {
+            const cart = getCart();
+            const placeholder = document.getElementById('cartPlaceholder');
+            const content = document.getElementById('cartContent');
+            content.innerHTML = '';
+            if (!cart.length) {
+                placeholder.innerHTML = '<div class="alert alert-warning">Your cart is empty. Please add meals from the order page. <a href="hall-food-menu.html" class="alert-link">Choose a meal</a>.</div>';
+                return;
+            }
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            placeholder.innerHTML = `
+                <div class="col-lg-4">
+                    <div class="bg-light rounded p-4 h-100 shadow-sm">
+                        <h4 class="mb-4">Order Summary</h4>
+                        <p class="mb-2">Total items: <strong>${totalItems}</strong></p>
+                        <p class="mb-2">Total price: <strong id="totalPrice">${formatPrice(getTotal())}</strong></p>
+                        <button id="submitOrderBtn" type="button" class="btn btn-primary w-100 mb-3">Submit Order</button>
+                        <button id="trackOrderBtn" type="button" class="btn btn-success w-100 d-none">Track Order</button>
+                    </div>
+                </div>`;
+
+            const submitOrderBtn = document.getElementById('submitOrderBtn');
+            const trackOrderBtn = document.getElementById('trackOrderBtn');
+            submitOrderBtn.addEventListener('click', submitOrder);
+            trackOrderBtn.addEventListener('click', () => {
+                window.location.href = 'tracking.html';
+            });
+
+            if (sessionStorage.getItem(ORDER_PLACED_KEY) === 'true') {
+                submitOrderBtn.textContent = 'Order Placed';
+                submitOrderBtn.disabled = true;
+                trackOrderBtn.classList.remove('d-none');
+                trackOrderBtn.classList.add('pulse-button');
+            }
+
+            cart.forEach(item => {
+                const itemCard = document.createElement('div');
+                itemCard.className = 'col-lg-8';
+                itemCard.innerHTML = `
+                    <div class="bg-white rounded shadow-sm p-4 mb-4">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-4">
+                                <img src="${item.image}" class="img-fluid rounded" alt="${item.name}">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h5 class="mb-1">${item.name}</h5>
+                                        <span class="text-primary fw-semibold">${formatPrice(item.price)}</span>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeItem('${item.id}')">Remove</button>
+                                </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div>
+                                        <label class="form-label mb-1">Quantity</label>
+                                        <input type="number" min="1" value="${item.quantity}" class="form-control" style="width: 100px;" onchange="changeQuantity('${item.id}', this.value)">
+                                    </div>
+                                    <div>
+                                        <strong>Total:</strong>
+                                        <div id="line-${item.id}">${formatPrice(item.quantity * item.price)}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                content.appendChild(itemCard);
+            });
+        }
+
+        function getTotal() {
+            return getCart().reduce((sum, item) => sum + item.price * item.quantity, 0);
+        }
+
+        function changeQuantity(id, value) {
+            const quantity = Math.max(1, Number(value));
+            const cart = getCart();
+            const item = cart.find(entry => entry.id === id);
+            if (!item) return;
+            item.quantity = quantity;
+            saveCart(cart);
+            const lineTotal = document.getElementById(`line-${id}`);
+            if (lineTotal) {
+                lineTotal.textContent = formatPrice(quantity * item.price);
+            }
+            const totalPrice = document.getElementById('totalPrice');
+            if (totalPrice) {
+                totalPrice.textContent = formatPrice(getTotal());
+            }
+        }
+
+        function removeItem(id) {
+            const cart = getCart().filter(item => item.id !== id);
+            saveCart(cart);
+            updateCartDisplay();
+        }
+
+        function submitOrder() {
+            if (!getCart().length) {
+                alert('Your cart is empty. Add at least one meal before submitting.');
+                return;
+            }
+            playNotificationTone();
+            alert('Your order has been placed!');
+            sessionStorage.setItem(ORDER_PLACED_KEY, 'true');
+            updateCartDisplay();
+        }
+
+        window.addEventListener('load', () => {
+            clearStateOnReload();
+            updateCartDisplay();
+        });
+    </script>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Login Form -->
+                    <div id="loginForm">
+                        <form id="loginFormData">
+                            <div class="mb-3">
+                                <label for="loginEmail" class="form-label">Email or Name</label>
+                                <input type="text" class="form-control" id="loginEmail" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="loginPassword" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="loginPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </form>
+                        <p class="mt-3">Don't have an account? <a href="#" id="showSignup">Create one</a></p>
+                    </div>
+                    <!-- Signup Form -->
+                    <div id="signupForm" style="display: none;">
+                        <form id="signupFormData">
+                            <div class="mb-3">
+                                <label for="signupName" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="signupName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="signupEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="signupEmail" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="signupPassword" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="signupPassword" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="signupConfirmPassword" class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="signupConfirmPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Create Account</button>
+                        </form>
+                        <p class="mt-3">Already have an account? <a href="#" id="showLogin">Login</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

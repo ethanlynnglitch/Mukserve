@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Track Order - MukServe</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <link href="lib/fontawesome/css/all.min.css" rel="stylesheet">
+    <link href="lib/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container-xxl bg-white p-0">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
+            <a href="index.html" class="navbar-brand p-0">
+                <h1 class="text-primary m-0"><i class="fa fa-utensils me-3"></i>MUKSERVE</h1>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="fa fa-bars"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto py-0 pe-4">
+                    <a href="index.html" class="nav-item nav-link">Home</a>
+                    <a href="hall-food-menu.html" class="nav-item nav-link">Order</a>
+                    <a href="cart.html" class="nav-item nav-link">Cart</a>
+                    <a href="contact.html" class="nav-item nav-link">Contact</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-xxl py-5 bg-dark hero-header mb-5">
+            <div class="container my-5 py-5">
+                <div class="row align-items-center g-5">
+                    <div class="col-lg-6 text-center text-lg-start">
+                        <h1 class="display-3 text-white animated slideInLeft">Track Your Order</h1>
+                        <p class="text-white animated slideInLeft mb-4 pb-2">Your order is on its way. Check the latest status below.</p>
+                    </div>
+                    <div class="col-lg-6 text-center text-lg-end overflow-hidden">
+                        <img class="img-fluid" src="img/hero.png" alt="Track Order">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-xxl py-5">
+            <div class="container">
+                <div class="bg-light rounded p-5 shadow-sm text-center">
+                    <h2 class="mb-4">Order Status</h2>
+                    <p id="trackingMessage">Your order has been confirmed and is being prepared.</p>
+                    <div class="progress mb-4" style="height: 25px;">
+                        <div id="trackingProgress" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 35%;" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100">Confirmed</div>
+                    </div>
+                    <p class="mb-0"><strong>Estimated delivery:</strong> <span id="trackingEstimate">3-5 minutes</span></p>
+                    <div id="trackingAlert" class="alert alert-primary bg-primary bg-opacity-10 border-primary text-primary d-none mt-4 shadow-sm" role="alert"></div>
+                    <div class="mt-4">
+                        <a href="cart.html" class="btn btn-primary me-2">Back to Cart</a>
+                        <a href="hall-food-menu.html" class="btn btn-outline-primary">Browse More Meals</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid bg-dark text-light footer pt-5 mt-5">
+            <div class="container py-5">
+                <div class="row g-5">
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Company</h4>
+                        <a class="btn btn-link" href="index.html">Home</a>
+                        <a class="btn btn-link" href="contact.html">Contact Us</a>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Contact</h4>
+                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Makerere University Main Campus, Kampala Road, Kampala, Uganda</p>
+                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+256 414 540 111</p>
+                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@mukserve.ug</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    </div>
+
+    <script src="lib/jquery/jquery-3.4.1.min.js"></script>
+    <script src="lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/counterup/counterup.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        function clearStateOnReload() {
+            const navEntries = performance.getEntriesByType ? performance.getEntriesByType('navigation') : [];
+            const isReload = (navEntries && navEntries.length && navEntries[0].type === 'reload') ||
+                (performance.navigation && performance.navigation.type === performance.navigation.TYPE_RELOAD);
+            if (isReload) {
+                sessionStorage.removeItem('mukserveCart');
+                sessionStorage.removeItem('mukserveOrderPlaced');
+            }
+        }
+
+        function playLuxuryAlert() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const now = audioCtx.currentTime;
+                const gain = audioCtx.createGain();
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.35, now + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+                gain.connect(audioCtx.destination);
+
+                const tone = (freq, type, delay) => {
+                    const osc = audioCtx.createOscillator();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, now + delay);
+                    osc.connect(gain);
+                    osc.start(now + delay);
+                    osc.stop(now + delay + 1.1);
+                };
+
+                tone(880, 'triangle', 0);
+                tone(1320, 'sine', 0.12);
+                tone(660, 'sine', 0.28);
+            } catch (e) {
+                console.warn('Luxury alert sound unavailable', e);
+            }
+        }
+
+        function showBrowserNotification() {
+            if (!('Notification' in window)) return;
+            if (Notification.permission === 'granted') {
+                new Notification('MukServe', {
+                    body: 'Your order has arrived. Enjoy your meal!'
+                });
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        new Notification('MukServe', {
+                            body: 'Your order has arrived. Enjoy your meal!'
+                        });
+                    }
+                });
+            }
+        }
+
+        function showDeliveryAlert() {
+            const alert = document.getElementById('trackingAlert');
+            if (!alert) return;
+            alert.classList.remove('d-none');
+            alert.innerHTML = '<strong class="text-dark">Order Delivered!</strong> Your meal has arrived. Enjoy the fresh chicken experience with MukServe.';
+            playLuxuryAlert();
+            showBrowserNotification();
+        }
+
+        function updateOrderStatus(statusText, width, progressClass, estimateText) {
+            const progress = document.getElementById('trackingProgress');
+            const message = document.getElementById('trackingMessage');
+            const estimate = document.getElementById('trackingEstimate');
+            if (!progress || !message || !estimate) return;
+            progress.className = `progress-bar progress-bar-striped progress-bar-animated ${progressClass}`;
+            progress.style.width = width + '%';
+            progress.setAttribute('aria-valuenow', width);
+            progress.textContent = statusText;
+            message.textContent = statusText === 'Delivered' ? 'Your order has been delivered.' : `Your order is ${statusText.toLowerCase()}.`;
+            estimate.textContent = estimateText;
+        }
+
+        function scheduleTrackingProgress() {
+            updateOrderStatus('Preparing', 55, 'bg-info', '2-4 minutes');
+            setTimeout(() => {
+                updateOrderStatus('Out for delivery', 85, 'bg-warning', 'Arriving shortly');
+            }, 3000);
+            setTimeout(() => {
+                updateOrderStatus('Delivered', 100, 'bg-success', 'Arrived');
+                showDeliveryAlert();
+            }, 7000);
+        }
+
+        window.addEventListener('load', () => {
+            clearStateOnReload();
+            scheduleTrackingProgress();
+        });
+    </script>
+</body>
+
+</html>
